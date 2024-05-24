@@ -13,7 +13,11 @@ def coloca_umidade():
     dados = request.form.get("dados")
     if dados is not None:
         umidade = dados
-        print(f'\033[92mUmidade recebida: {dados}\033[0m') 
+
+        print("\033[34m************************>> RECEBI <<************************\n\033[0m")
+        print(f'\033[92m Umidade recebida: {dados}\n\033[0m') 
+        print("\033[34m************************************************************\n\033[0m")
+
         return f'Umidade salva com sucesso: {umidade}'
     else:
         print('\033[91mDados não fornecidos\033[0m')  
@@ -24,10 +28,13 @@ def coloca_umidade():
 def puxa_umidade():
     global umidade
     if umidade is not None:
-        print(f'\033[92m Umidade solicitada: {umidade} \033[0m')
+        print("\033[38;5;214m**********************>> SOLICITADA <<**********************\n\033[0m")
+        print(f'\033[92m Umidade solicitada: {umidade}\n \033[0m')
+        print("\033[38;5;214m************************************************************\n\033[0m")
+
         return f'{umidade}% umidade!'
     else:
-        print('\033[91mUmidade não disponível\033[0m')  
+        print('\033[91m Umidade não disponível\033[0m')  
         return 'Umidade não disponível', 404
 
 if __name__ == '__main__':
