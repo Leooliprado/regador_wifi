@@ -32,7 +32,7 @@ def puxa_umidade():
         print(f'\033[92m Umidade solicitada: {umidade}\n \033[0m')
         print("\033[38;5;214m************************************************************\n\033[0m")
 
-        return f'{umidade}% umidade!'
+        return f'{umidade}'
     else:
         print('\033[91m Umidade não disponível\033[0m')  
         return 'Umidade não disponível', 404
