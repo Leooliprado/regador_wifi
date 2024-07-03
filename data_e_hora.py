@@ -16,7 +16,7 @@ def dataehora():
 
 
 # Agendar a tarefa para calcular a média diária às 24 horas todos os dias
-schedule.every().day.at("10:12").do(calcular_media_diaria)
+schedule.every().day.at("00:00").do(calcular_media_diaria)
 
 
 
