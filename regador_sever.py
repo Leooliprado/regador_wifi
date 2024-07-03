@@ -5,7 +5,7 @@ import schedule
 import time
 from threading import Thread
 
-from banco_de_dados import insert_data  # Import para a função insert_data
+from banco_de_dados import  insert_data, obter_ultima_media_diaria  # Import para a função insert_data
 from data_e_hora import dataehora
 
 app = Flask(__name__)
@@ -32,8 +32,8 @@ def coloca_umidade():
             schedule.cancel_job(scheduled_job)  # Cancela o job agendado se existir
 
         if umidade < 3001:
-            # Agenda a gravação dos dados de umidade a cada 1 minuto
-            scheduled_job = schedule.every(1).minutes.do(insert_data, data, umidade, precisa_irrigar)
+            # Agenda a gravação dos dados de umidade a cada 30 minutos
+            scheduled_job = schedule.every(30).minutes.do(insert_data, data, umidade, precisa_irrigar)
         else:
             # Grava os dados de umidade imediatamente
             insert_data(data, umidade, precisa_irrigar)
@@ -56,7 +56,13 @@ def puxa_umidade():
         print(f'\033[92m Umidade solicitada: {umidade}\n \033[0m')
         print("\033[38;5;214m**********************\n\033[0m")
 
-        return f'{umidade}'
+        ultima_media = obter_ultima_media_diaria()
+        if ultima_media:
+            print(f'\033[92m Média diária mais recente: {ultima_media}\n\033[0m')
+            return f'{umidade} {ultima_media}'
+        else:
+            print('\033[91m Nenhuma média diária disponível\033[0m')
+            return f'{umidade}'
     else:
         print('\033[91m Umidade não disponível\033[0m')  
         return 'Umidade não disponível', 404
