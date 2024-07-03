@@ -11,6 +11,7 @@ db_config = {
 }
 
 
+
 # Função para conectar ao banco de dados
 def connect_db():
     conn = psycopg2.connect(**db_config)

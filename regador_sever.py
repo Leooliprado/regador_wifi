@@ -4,23 +4,21 @@ import socket
 import schedule
 import time
 from threading import Thread
-
+from multiprocessing import Value
 from banco_de_dados import insert_data, obter_ultima_media_diaria  # Import para a função insert_data
 from data_e_hora import dataehora
 
 app = Flask(__name__)
 
+
+ultima_data = Value('i',0)
+
+
 # Variável global para armazenar a umidade
 umidade = None
 scheduled_job = None  # Variável para armazenar o job agendado
 
-# Função para agendar tarefas de gravação
-def schedule_insert_data(data, umidade, precisa_irrigar):
-    global scheduled_job
-    if scheduled_job:
-        schedule.cancel_job(scheduled_job)  # Cancela o job agendado se existir
 
-    scheduled_job = schedule.every(30).minutes.do(insert_data, data, umidade, precisa_irrigar)
 
 # Rota para receber dados de umidade do Arduino
 @app.route('/umidade', methods=['POST'])
@@ -35,13 +33,22 @@ def coloca_umidade():
 
         precisa_irrigar = umidade > 3001
         data = dataehora()  # Obtém a data e hora atuais
+
         
-        if umidade < 3001:
-            # Agenda a gravação dos dados de umidade a cada 30 minutos
-            schedule_insert_data(data, umidade, precisa_irrigar)
-        else:
-            # Grava os dados de umidade imediatamente
+        print(int(time.time()))
+        print(ultima_data.value)
+        if int(time.time())-ultima_data.value > 1800:
+            print("pasou 30")
+            # fas mais que trita minutos
+            ultima_data.value = int(time.time()) 
+            
             insert_data(data, umidade, precisa_irrigar)
+        
+        if umidade > 3001:
+            # schedule_insert_data(data, umidade, precisa_irrigar)
+            insert_data(data, umidade, precisa_irrigar)
+       
+            
 
         print("\033[34m*********>> RECEBI <<*********\n\033[0m")
         print(f'\033[92m Umidade recebida: {dados}\n\033[0m') 
