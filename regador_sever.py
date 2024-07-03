@@ -1,5 +1,5 @@
 from datetime import datetime
-from flask import Flask, request
+from flask import Flask, request, jsonify
 import socket
 import schedule
 import time
@@ -35,10 +35,10 @@ def coloca_umidade():
         data = dataehora()  # Obtém a data e hora atuais
 
         
-        print(int(time.time()))
-        print(ultima_data.value)
+        # print(int(time.time()))
+        # print(ultima_data.value)
         if int(time.time())-ultima_data.value > 1800:
-            print("pasou 30")
+            print("\033[34m************>> passou 30 minutos \n\033[0m")
             # fas mais que trita minutos
             ultima_data.value = int(time.time()) 
             
@@ -50,9 +50,11 @@ def coloca_umidade():
        
             
 
-        print("\033[34m*********>> RECEBI <<*********\n\033[0m")
+        print("\033[34m*****************>> RECEBI <<*****************\n\033[0m")
+
         print(f'\033[92m Umidade recebida: {dados}\n\033[0m') 
-        print("\033[34m**********************\n\033[0m")
+
+        print("\033[34m**********************************************\n\033[0m")
 
         return f'Umidade salva com sucesso: {umidade}'
     else:
@@ -64,17 +66,19 @@ def coloca_umidade():
 def puxa_umidade():
     global umidade
     if umidade is not None:
-        print("\033[38;5;214m********>> SOLICITADA <<********\n\033[0m")
+        print("\033[38;5;214m***************>> SOLICITADA <<***************\n\033[0m")
+
         print(f'\033[92m Umidade solicitada: {umidade}\n \033[0m')
-        print("\033[38;5;214m**********************\n\033[0m")
+
+        print("\033[38;5;214m**********************************************\n\033[0m")
 
         ultima_media = obter_ultima_media_diaria()
-        if ultima_media:
+        if ultima_media is not None:
             print(f'\033[92m Média diária mais recente: {ultima_media}\n\033[0m')
-            return f'{umidade} {ultima_media}'
+            return jsonify({'umidade': umidade, 'media_diaria': ultima_media})
         else:
-            print('\033[91m Nenhuma média diária disponível\033[0m')
-            return f'{umidade}'
+            print('\033[91m ************>> Nenhuma média diária disponível\033[0m')
+            return jsonify({'umidade': umidade, 'media_diaria': None})
     else:
         print('\033[91m Umidade não disponível\033[0m')  
         return 'Umidade não disponível', 404
