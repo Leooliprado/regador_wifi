@@ -5,7 +5,7 @@ import schedule
 import time
 from threading import Thread
 
-from banco_de_dados import  insert_data, obter_ultima_media_diaria  # Import para a função insert_data
+from banco_de_dados import insert_data, obter_ultima_media_diaria  # Import para a função insert_data
 from data_e_hora import dataehora
 
 app = Flask(__name__)
@@ -14,10 +14,18 @@ app = Flask(__name__)
 umidade = None
 scheduled_job = None  # Variável para armazenar o job agendado
 
+# Função para agendar tarefas de gravação
+def schedule_insert_data(data, umidade, precisa_irrigar):
+    global scheduled_job
+    if scheduled_job:
+        schedule.cancel_job(scheduled_job)  # Cancela o job agendado se existir
+
+    scheduled_job = schedule.every(30).minutes.do(insert_data, data, umidade, precisa_irrigar)
+
 # Rota para receber dados de umidade do Arduino
 @app.route('/umidade', methods=['POST'])
 def coloca_umidade():
-    global umidade, scheduled_job
+    global umidade
     dados = request.form.get("dados")
     if dados is not None:
         try:
@@ -28,12 +36,9 @@ def coloca_umidade():
         precisa_irrigar = umidade > 3001
         data = dataehora()  # Obtém a data e hora atuais
         
-        if scheduled_job:
-            schedule.cancel_job(scheduled_job)  # Cancela o job agendado se existir
-
         if umidade < 3001:
             # Agenda a gravação dos dados de umidade a cada 30 minutos
-            scheduled_job = schedule.every(30).minutes.do(insert_data, data, umidade, precisa_irrigar)
+            schedule_insert_data(data, umidade, precisa_irrigar)
         else:
             # Grava os dados de umidade imediatamente
             insert_data(data, umidade, precisa_irrigar)
