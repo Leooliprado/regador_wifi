@@ -18,6 +18,8 @@ ultima_data = Value('i',0)
 umidade = None
 scheduled_job = None  # Variável para armazenar o job agendado
 
+umidade_ideal = 3001
+
 
 
 # Rota para receber dados de umidade do Arduino
@@ -31,7 +33,7 @@ def coloca_umidade():
         except ValueError:
             return 'Dados fornecidos são inválidos', 400
 
-        precisa_irrigar = umidade > 3001
+        precisa_irrigar = umidade > umidade_ideal
         data = dataehora()  # Obtém a data e hora atuais
 
         
@@ -44,7 +46,7 @@ def coloca_umidade():
             
             insert_data(data, umidade, precisa_irrigar)
         
-        if umidade > 3001:
+        if umidade > umidade_ideal:
             # schedule_insert_data(data, umidade, precisa_irrigar)
             insert_data(data, umidade, precisa_irrigar)
        
@@ -71,16 +73,28 @@ def puxa_umidade():
         print(f'\033[92m Umidade solicitada: {umidade}\n \033[0m')
 
         print("\033[38;5;214m**********************************************\n\033[0m")
+        
+
+        if umidade > umidade_ideal:
+            bomba_estado = True
+        else:
+            bomba_estado = False
+
 
         ultima_media = obter_ultima_media_diaria()
+
+
         if ultima_media is not None:
             print(f'\033[92m Média diária mais recente: {ultima_media}\n\033[0m')
-            return jsonify({'umidade': umidade, 'media_diaria': ultima_media})
+            
+            return jsonify({'umidade': umidade, 'media_diaria': ultima_media, 'estado_bomba': bomba_estado})
         else:
             print('\033[91m ************>> Nenhuma média diária disponível\033[0m')
-            return jsonify({'umidade': umidade, 'media_diaria': None})
+
+            return jsonify({'umidade': umidade, 'media_diaria': None, 'estado_bomba': bomba_estado})
     else:
         print('\033[91m Umidade não disponível\033[0m')  
+
         return 'Umidade não disponível', 404
 
 # Função para executar tarefas agendadas
