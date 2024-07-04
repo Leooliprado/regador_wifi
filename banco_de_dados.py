@@ -61,6 +61,7 @@ def inserir_media_diaria(data, media_umidade_solo):
     conn.commit()
     cur.close()
     conn.close()
+    inrrigar_limpar()
 
 # Função para obter a última média diária calculada
 def obter_ultima_media_diaria():
@@ -72,3 +73,14 @@ def obter_ultima_media_diaria():
     cur.close()
     conn.close()
     return resultado[0] if resultado else None
+
+
+
+
+def inrrigar_limpar():
+    conn = connect_db()
+    cur = conn.cursor()
+    cur.execute("DELETE FROM inrrigar")
+    conn.commit()
+    cur.close()
+    conn.close()
