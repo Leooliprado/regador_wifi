@@ -13,6 +13,7 @@ db_config = {
 
 
 
+
 # Função para conectar ao banco de dados
 def connect_db():
     conn = psycopg2.connect(**db_config)
@@ -95,10 +96,6 @@ def obter_medias_diarias_semana():
 
 
 
-
-
-
-
 def inrrigar_limpar():
     conn = connect_db()
     cur = conn.cursor()
@@ -106,3 +103,15 @@ def inrrigar_limpar():
     conn.commit()
     cur.close()
     conn.close()
+
+
+
+
+def limpar_tabela_media_diarias():
+    conn = connect_db()
+    cur = conn.cursor()
+    cur.execute("DELETE FROM medias_diariasr")
+    conn.commit()
+    cur.close()
+    conn.close()
+
