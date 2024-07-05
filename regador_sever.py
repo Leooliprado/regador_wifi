@@ -5,7 +5,7 @@ import schedule
 import time
 from threading import Thread
 from multiprocessing import Value
-from banco_de_dados import insert_data, obter_ultima_media_diaria  # Import para a função insert_data
+from banco_de_dados import insert_data, obter_medias_diarias_semana, obter_ultima_media_diaria  # Import para a função insert_data
 from data_e_hora import dataehora
 
 app = Flask(__name__)
@@ -82,16 +82,17 @@ def puxa_umidade():
 
 
         ultima_media = obter_ultima_media_diaria()
+        medias_diarias_semana = obter_medias_diarias_semana()
 
 
         if ultima_media is not None:
             print(f'\033[92m Média diária mais recente: {ultima_media}\n\033[0m')
             
-            return jsonify({'umidade': umidade, 'media_diaria': ultima_media, 'estado_bomba': bomba_estado})
+            return jsonify({'umidade': umidade, 'media_diaria': ultima_media,'medias_diarias_semana': medias_diarias_semana, 'estado_bomba': bomba_estado})
         else:
             print('\033[91m ************>> Nenhuma média diária disponível\033[0m')
 
-            return jsonify({'umidade': umidade, 'media_diaria': None, 'estado_bomba': bomba_estado})
+            return jsonify({'umidade': umidade, 'media_diaria': None,'medias_diarias_semana': medias_diarias_semana, 'estado_bomba': bomba_estado})
     else:
         print('\033[91m Umidade não disponível\033[0m')  
 

@@ -77,6 +77,28 @@ def obter_ultima_media_diaria():
 
 
 
+
+def obter_medias_diarias_semana():
+    conn = connect_db()
+    cur = conn.cursor()
+    query = """
+        SELECT data, media_umidade_solo 
+        FROM medias_diarias 
+        WHERE data >= CURRENT_DATE - INTERVAL '7 days'
+        ORDER BY data;
+    """
+    cur.execute(query)
+    resultados = cur.fetchall()
+    cur.close()
+    conn.close()
+    return [{'data': linha[0], 'media_umidade_solo': linha[1]} for linha in resultados] if resultados else None
+
+
+
+
+
+
+
 def inrrigar_limpar():
     conn = connect_db()
     cur = conn.cursor()
