@@ -96,6 +96,24 @@ def obter_medias_diarias_semana():
 
 
 
+
+# Função para contar quantas vezes precisa_irrigar foi TRUE
+def contar_precisa_irrigar():
+    conn = connect_db()
+    cur = conn.cursor()
+    query = "SELECT COUNT(*) FROM inrrigar WHERE precisa_irrigar = TRUE"
+    cur.execute(query)
+    resultado = cur.fetchone()
+    cur.close()
+    conn.close()
+    return resultado[0] if resultado else 0
+
+
+
+
+
+
+
 def inrrigar_limpar():
     conn = connect_db()
     cur = conn.cursor()
