@@ -5,7 +5,7 @@ import schedule
 import time
 from threading import Thread
 from multiprocessing import Value
-from banco_de_dados import contar_precisa_irrigar, insert_data, obter_medias_diarias_semana, obter_ultima_media_diaria  # Import para a função insert_data
+from banco_de_dados import calcular_media_diaria, contar_precisa_irrigar, insert_data, limpar_tabela_media_diarias, obter_medias_diarias_semana, obter_ultima_media_diaria  # Import para a função insert_data
 from data_e_hora import dataehora
 
 app = Flask(__name__)
@@ -110,7 +110,9 @@ if __name__ == '__main__':
     ip = socket.gethostbyname(hostname)
     print(f"Operando no IP: {ip}")
 
-    # Inicia a thread para executar tarefas agendadas
+    schedule.every().day.at("00:00").do(calcular_media_diaria)
+    schedule.every().saturday.at("23:59").do(limpar_tabela_media_diarias)
+
     schedule_thread = Thread(target=run_schedule)
     schedule_thread.daemon = True
     schedule_thread.start()
