@@ -18,7 +18,7 @@ ultima_data = Value('i',0)
 umidade = None
 scheduled_job = None  # Variável para armazenar o job agendado
 
-umidade_ideal = 3001
+umidade_ideal = 2000
 
 
 
