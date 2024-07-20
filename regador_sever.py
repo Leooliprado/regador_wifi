@@ -5,7 +5,7 @@ import schedule
 import time
 from threading import Thread
 from multiprocessing import Value
-from banco_de_dados import calcular_media_diaria, contar_precisa_irrigar, insert_data, limpar_tabela_media_diarias, obter_medias_diarias_semana, obter_ultima_media_diaria  # Import para a função insert_data
+from banco_de_dados import calcular_media_diaria, contar_precisa_irrigar, insert_data, limpar_tabela_media_diarias, obter_medias_diarias_semana, obter_ultima_media_diaria, pegar_tudo_tebala_irrigar  # Import para a função insert_data
 from data_e_hora import dataehora
 
 app = Flask(__name__)
@@ -84,16 +84,29 @@ def puxa_umidade():
         ultima_media = obter_ultima_media_diaria()
         medias_diarias_semana = obter_medias_diarias_semana()
         precisa_irrigar = contar_precisa_irrigar()
+        tudo_tebala_irrigar = pegar_tudo_tebala_irrigar()
 
 
         if ultima_media is not None:
             print(f'\033[92m Média diária mais recente: {ultima_media}\n\033[0m')
             
-            return jsonify({'umidade': umidade, 'media_diaria': ultima_media,'medias_diarias_semana': medias_diarias_semana,'precisa_irrigar':precisa_irrigar, 'estado_bomba': bomba_estado})
+            return jsonify({'umidade': umidade,
+                             'media_diaria': ultima_media,
+                             'medias_diarias_semana': medias_diarias_semana,
+                             'precisa_irrigar':precisa_irrigar,
+                             'estado_bomba': bomba_estado,
+                             'tudo_tebala_irrigar':tudo_tebala_irrigar
+                             })
         else:
             print('\033[91m ************>> Nenhuma média diária disponível\033[0m')
 
-            return jsonify({'umidade': umidade, 'media_diaria': None,'medias_diarias_semana': medias_diarias_semana,'precisa_irrigar':precisa_irrigar, 'estado_bomba': bomba_estado})
+            return jsonify({'umidade': umidade,
+                             'media_diaria': None,
+                             'medias_diarias_semana': medias_diarias_semana,
+                             'precisa_irrigar':precisa_irrigar,
+                             'estado_bomba': bomba_estado,
+                             'tudo_tebala_irrigar':tudo_tebala_irrigar
+                             })
     else:
         print('\033[91m Umidade não disponível\033[0m')  
 

@@ -108,6 +108,16 @@ def contar_precisa_irrigar():
     conn.close()
     return resultado[0] if resultado else 0
 
+def pegar_tudo_tebala_irrigar():
+    conn = connect_db()  # Função para conectar ao banco de dados
+    cur = conn.cursor()
+    query = "SELECT data, umidade_solo FROM inrrigar"
+    cur.execute(query)
+    resultado = cur.fetchall()  # Usar fetchall para pegar todas as linhas
+    cur.close()
+    conn.close()
+    return resultado if resultado else None
+
 
 
 
@@ -128,7 +138,7 @@ def inrrigar_limpar():
 def limpar_tabela_media_diarias():
     conn = connect_db()
     cur = conn.cursor()
-    cur.execute("DELETE FROM medias_diariasr")
+    cur.execute("DELETE FROM medias_diarias")
     conn.commit()
     cur.close()
     conn.close()
