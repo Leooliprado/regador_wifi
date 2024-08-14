@@ -7,6 +7,7 @@ from threading import Thread
 from multiprocessing import Value
 from banco_de_dados import calcular_media_diaria, contar_precisa_irrigar, insert_data, limpar_tabela_media_diarias, obter_medias_diarias_semana, obter_ultima_media_diaria, pegar_tudo_tebala_irrigar  # Import para a função insert_data
 from data_e_hora import dataehora
+from previsão_de_chuva import previsão_de_chuva
 
 app = Flask(__name__)
 
@@ -18,7 +19,7 @@ ultima_data = Value('i',0)
 umidade = None
 scheduled_job = None  # Variável para armazenar o job agendado
 
-umidade_ideal = 2000
+umidade_ideal = 1600
 
 
 
@@ -85,9 +86,17 @@ def puxa_umidade():
         medias_diarias_semana = obter_medias_diarias_semana()
         precisa_irrigar = contar_precisa_irrigar()
         tudo_tebala_irrigar = pegar_tudo_tebala_irrigar()
+        perver_chuva = previsão_de_chuva()
+
+        # Verificando se vai chover com base na previsão de chuva
+        vai_chover = perver_chuva and perver_chuva.get('pop', 0) >= 70.0
+
+        print(f'\033[34m vai chover: {vai_chover} \n\033[0m')
 
 
-        if ultima_media is not None:
+
+
+        if vai_chover == False:
             print(f'\033[92m Média diária mais recente: {ultima_media}\n\033[0m')
             
             return jsonify({'umidade': umidade,
@@ -95,22 +104,34 @@ def puxa_umidade():
                              'medias_diarias_semana': medias_diarias_semana,
                              'precisa_irrigar':precisa_irrigar,
                              'estado_bomba': bomba_estado,
-                             'tudo_tebala_irrigar':tudo_tebala_irrigar
+                             'tudo_tebala_irrigar':tudo_tebala_irrigar,
+                             'prever_chuva':perver_chuva
                              })
         else:
-            print('\033[91m ************>> Nenhuma média diária disponível\033[0m')
 
             return jsonify({'umidade': umidade,
-                             'media_diaria': None,
+                             'media_diaria': ultima_media,
                              'medias_diarias_semana': medias_diarias_semana,
-                             'precisa_irrigar':precisa_irrigar,
-                             'estado_bomba': bomba_estado,
-                             'tudo_tebala_irrigar':tudo_tebala_irrigar
+                             'precisa_irrigar':'Pela chuva',
+                             'estado_bomba': False,
+                             'tudo_tebala_irrigar':tudo_tebala_irrigar,
+                             'prever_chuva':perver_chuva
                              })
     else:
         print('\033[91m Umidade não disponível\033[0m')  
 
         return 'Umidade não disponível', 404
+    
+
+@app.route('/vai_chover', methods=['GET']) 
+def verifica_status():
+    perver_chuva = previsão_de_chuva()
+
+    # Verificando se vai chover com base na previsão de chuva
+    vai_chover = perver_chuva and perver_chuva.get('pop', 0) >= 70.0
+    
+    return jsonify({'vai_chover': vai_chover})
+
 
 # Função para executar tarefas agendadas
 def run_schedule():
