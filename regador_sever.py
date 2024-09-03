@@ -1,5 +1,6 @@
 from datetime import datetime
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 import socket
 import schedule
 import time
@@ -7,9 +8,11 @@ from threading import Thread
 from multiprocessing import Value
 from banco_de_dados import calcular_media_diaria, contar_precisa_irrigar, insert_data, limpar_tabela_media_diarias, obter_medias_diarias_semana, obter_ultima_media_diaria, pegar_tudo_tebala_irrigar  # Import para a função insert_data
 from data_e_hora import dataehora
+from enviaemail import enviar_email
 from previsão_de_chuva import previsão_de_chuva
 
 app = Flask(__name__)
+CORS(app)  # Isso habilitará o CORS para todas as rotas
 
 
 ultima_data = Value('i',0)
@@ -49,6 +52,10 @@ def coloca_umidade():
         
         if umidade > umidade_ideal:
             # schedule_insert_data(data, umidade, precisa_irrigar)
+            email_receber = ""
+            irrigar_hoje = contar_precisa_irrigar()
+            enviar_email(email_receber, irrigar_hoje, data)
+
             insert_data(data, umidade, precisa_irrigar)
        
             
