@@ -52,11 +52,11 @@ def coloca_umidade():
         
         if umidade > umidade_ideal:
             # schedule_insert_data(data, umidade, precisa_irrigar)
+            insert_data(data, umidade, precisa_irrigar)
+
             email_receber = ""
             irrigar_hoje = contar_precisa_irrigar()
             enviar_email(email_receber, irrigar_hoje, data)
-
-            insert_data(data, umidade, precisa_irrigar)
        
             
 
